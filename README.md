@@ -7,4 +7,4 @@
 5. WebServerHealthCheck: This script pings a website and sends an email if it's down
 
 ### To run the script,
-on your terminal you'll type in this format, "./ AutoUserAccountCreation.sh"
+on your terminal you'll type in this format, "./ AutoUserAccountCreation.sh" e.t.c.

@@ -7,7 +7,7 @@
 5. WebServerHealthCheck: This script pings a website and sends an email if it's down
 
 ### To run the script,
-on your terminal you'll type in this format, 
+on your terminal you'll type in this format: 
 
-"chmod 777 AutoUserAccountCreation.sh" e.t.c.
-"./ AutoUserAccountCreation.sh" e.t.c.
+1. "chmod 777 AutoUserAccountCreation.sh" e.t.c.
+2. "./ AutoUserAccountCreation.sh" e.t.c.

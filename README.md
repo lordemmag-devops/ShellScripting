@@ -5,3 +5,6 @@
 3. ParallelProcessingWithBackground : This script runs multiple tasks immediately and waits for them to finish.
 4. SystemHealthMonitor : This script continuously monitors system resources and saves output.
 5. WebServerHealthCheck: This script pings a website and sends an email if it's down
+
+### To run the script,
+on your terminal you'll type in this format, "./ AutoUserAccountCreation.sh"

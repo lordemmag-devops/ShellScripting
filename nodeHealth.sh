@@ -9,11 +9,9 @@
 # Version: v1
 ##############################
 
-echo "Print the disc space."
+set -x # debug mode
 df -h
 
-echo "Print the memory."
 free -g
 
-echo "Print the resources"
 nproc

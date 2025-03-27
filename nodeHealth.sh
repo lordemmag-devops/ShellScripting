@@ -9,8 +9,11 @@
 # Version: v1
 ##############################
 
-df -h # Print the disc space.
+echo "Print the disc space."
+df -h
 
-free -g # Print the memory.
+echo "Print the memory."
+free -g
 
-nproc # Printing the resources.
+echo "Print the resources"
+nproc

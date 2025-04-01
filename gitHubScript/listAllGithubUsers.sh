@@ -1,37 +1,42 @@
 #!/bin/bash
 
-# Ensure the token is set
-if [ -z "$GITHUB_TOKEN" ]; then
-    echo "Error: GITHUB_TOKEN is not set. Export it before running the script."
-    exit 1
-fi
+# GitHub API URL
+API_URL="https://api.github.com"
 
-# GitHub settings
-OWNER="your_org_or_username"
-REPO="your_repository_name"
-API_URL="https://api.github.com/repos/$OWNER/$REPO/collaborators"
+# GitHub username and personal access token
+USERNAME=$username
+TOKEN=$token
 
-# Fetch API response
-response=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-                 -H "Accept: application/vnd.github.v3+json" "$API_URL")
+# User and Repository information
+REPO_OWNER=$1
+REPO_NAME=$2
 
-# Check if response is empty
-if [ -z "$response" ]; then
-    echo "Error: Empty response from GitHub API"
-    exit 1
-fi
+# Function to make a GET request to the GitHub API
+function github_api_get {
+	local endpoint="$1"
+	local url="${API_URL}/${endpoint}"
 
-# Check if response is valid JSON
-if ! echo "$response" | jq empty >/dev/null 2>&1; then
-    echo "Error: Invalid JSON response"
-    exit 1
-fi
+	# Send a GET request to the GitHub API with authentication
+	curl -s -u "${USERNAME}:${TOKEN}" "$url"
+}
 
-# Check for error messages in the response
-if echo "$response" | jq -e 'has("message")' >/dev/null; then
-    echo "Error: $(echo "$response" | jq -r '.message')"
-    exit 1
-fi
+# Function to list users with read access to the repository
+function list_users_with_read_access {
+	local endpoint="repos/${REPO_OWNER}/${REPO_NAME}/collaborators"
 
-# Extract and list user logins
-echo "$response" | jq -r '.[].login'
+	# Fetch the list of collaborators on the repository
+	collaborators="$(github_api_get "$endpoint" | jg -r '.[] | select(.permission.pull == true) |.login')"
+
+	# Display the list of collaborators with read access
+	if [[ -z "$collaborators" ]]; then
+		echo "No users with read access found for ${REPO_OWNER/$REPO_NAME}."
+	else
+		echo "Users with read access to ${REPO_OWNER}/${REPO_NAME}:"
+		echo "$collaborators"
+	fi
+}
+
+# Main script
+
+echo "Listing users with read access to ${REPO_OWNER}/${REPO_NAME}..."
+list_users_with_read_access

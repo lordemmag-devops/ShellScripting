@@ -1,27 +1,41 @@
 #!/bin/bash
 
-# GitHub settings (REPLACE THESE!)
-GITHUB_TOKEN="ghp_your_real_token_here"  # No extra spaces!
-OWNER="your_exact_github_username_or_org"  # Case-sensitive!
-REPO="your_exact_repository_name"          # Case-sensitive!
+# GitHub API URL
+API_URL="https://api.github.com"
 
-# API URL
-API_URL="https://api.github.com/repos/$OWNER/$REPO/collaborators"
+# GitHub username and personal access token (ensure these are set before running)
+USERNAME="$username"
+TOKEN="$token"
 
-# Fetch collaborators
-response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-                 -H "Accept: application/vnd.github.v3+json" "$API_URL")
+# User and Repository information
+REPO_OWNER="$1"
+REPO_NAME="$2"
 
-# Check for errors
-if [[ "$(echo "$response" | jq -r '.message')" == "Bad credentials" ]]; then
-    echo "❌ ERROR: Invalid GitHub token or permissions."
-    echo "👉 Generate a new token with proper scopes: https://github.com/settings/tokens"
-    exit 1
-elif [[ "$(echo "$response" | jq -r '.message')" == "Not Found" ]]; then
-    echo "❌ ERROR: Repository not found. Check OWNER/REPO names."
-    exit 1
-fi
+# Function to make a GET request to the GitHub API
+function github_api_get {
+	local endpoint="$1"
+	local url="${API_URL}/${endpoint}"
 
-# Success: List collaborators
-echo "✅ Users with access to $OWNER/$REPO:"
-echo "$response" | jq -r '.[].login'
+	# Send a GET request to the GitHub API with authentication
+	curl -s -u "${USERNAME}:${TOKEN}" "$url"
+}
+
+# Function to list users with read access to the repository
+function list_users_with_read_access {
+	local endpoint="repos/${REPO_OWNER}/${REPO_NAME}/collaborators"
+
+	# Fetch the list of collaborators on the repository
+	collaborators="$(github_api_get "$endpoint" | jq -r '.[] | select(.permissions.pull == true) | .login')"
+
+	# Display the list of collaborators with read access
+	if [[ -z "$collaborators" ]]; then
+		echo "No users with read access found for ${REPO_OWNER}/${REPO_NAME}."
+	else
+		echo "Users with read access to ${REPO_OWNER}/${REPO_NAME}:"
+		echo "$collaborators"
+	fi
+}
+
+# Main script
+echo "Listing users with read access to ${REPO_OWNER}/${REPO_NAME}..."
+list_users_with_read_access

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Debug mode.
+set -e
+
 helper()
 
 # GitHub API URL
